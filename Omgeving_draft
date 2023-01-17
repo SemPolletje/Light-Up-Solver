@@ -1,14 +1,8 @@
 def Omgeving(r,k,zwarte_velden):
     omgeving = [[r,k]]
     nog_niet_klaar = True
-    #Check of [r,k] in zwarte_velden zit
-    i=1
-    while nog_niet_klaar:
-        if [r,k] in zwarte_velden:
-            return 'Vakje zit in de zwarte velden'
-        nog_niet_klaar = True
     #Links
-    i = 1
+    i=1
     while nog_niet_klaar:
         if [r,k-i] in zwarte_velden:
             nog_niet_klaar = False
@@ -44,8 +38,3 @@ def Omgeving(r,k,zwarte_velden):
             i += 1
     
     return omgeving
-
-
-            
-
-    
