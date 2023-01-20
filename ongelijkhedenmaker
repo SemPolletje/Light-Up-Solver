@@ -134,7 +134,5 @@ for i in range(len(vakjes)):
             rijkolomaanongtoevoegen(rij)
         if len(kolom)>1:
             rijkolomaanongtoevoegen(kolom)
-            
-ong = copy.deepcopy(ong)
-            
+        
 print(ong)
