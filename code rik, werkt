@@ -1,8 +1,11 @@
+import time
+start = time.time()
+
 #input
-hoogte = 4
-breedte = 4
-hints = [[0,[4,1]],[0,[2,4]],[2,[3,1]]]
-zwarte_velden = [[1,2],[4,3]] 
+hoogte = 3
+breedte = 7
+hints = [[1,[1,1]],[1,[7,1]],[2,[2,3]],[2,[4,1]]]
+zwarte_velden = []
 
 #lege lijsten die we later nodig hebben
 vakjes = []
@@ -186,6 +189,7 @@ def optellen(a,b):
                 if optelling[j][1] == 0:
                     optelling.pop(j)
                 zitalinA = True
+                break
         if zitalinA == False:
             optelling.append([b[i][0],b[i][1]])   
     optelling.sort()
@@ -225,7 +229,7 @@ stop = False
 
 #de while loop-voorwaarde betekent: zolang er nog vakjes geen waarde 0 of 1 toegekend hebben gekregen.
 while vakjesrij != []:
-    
+
     #maak een kopie van de nog witte vakjes
     vakjessave = []
     for i in range(len(vakjesrij)):
@@ -263,19 +267,14 @@ while vakjesrij != []:
                 break
     
     #hieronder wordt voor elke ongelijkheid gekeken of er überhaupt nog nuttige informatie in zit, 
-    #anders wordt de ongelijkheid eruit gehaald, bijvoorbeeld als je voor elk vakje met positieve coefficient een lampje in zou
+    #anders wordt de ongelijkheid eruit gehaald, namelijk als je voor elk vakje met positieve coefficient een lampje in zou
     #kunnen vullen en je nog niet aan de positieve waarde aan de rechterkant van de ongelijkheid komt. 
-    #Hetzelfde geldt voor voor elk vakje met negatieve coefficient een lampje invullen en nog niet onder de negatieve waarde aan
-    #de rechterkant van de vergelijking komen.
     for i in range(len(ong)-1,-1,-1):
         maximum = 0
-        minimum = 0
         for j in range(len(ong[i])-1):
             if ong[i][j][1] > 0:
                 maximum = maximum + ong[i][j][1]
-            else:
-                minimum = minimum + ong[i][j][1]
-        if maximum <= ong[i][-1] or minimum >= ong[i][-1]:
+        if maximum <= ong[i][-1]:
             ong.pop(i)
     
     #vergelijk de nog witte vakjes met de kopie van de oude nog witte vakjes, 
@@ -286,13 +285,34 @@ while vakjesrij != []:
         if len(ong) == 1:
             stop = True
         else:
-            for i in range(len(ong)):
-                for j in range(i+1,len(ong)):
-                    optellen(ong[i],ong[j])
-    
+            x = len(ong)
+            for i in range(x):
+                for j in range(i+1,x):
+                    doen = False
+                    #onderstaande for loop controleert of ongelijkheden een vakje gemeen hebben.
+                    #Alleen als ongelijkheden een vakje gemeen hebben is het namelijk nuttig om ongelijkheden op te tellen,
+                    #als ze beide verschillende vakjes bevatten heb je niet veel aan optellen, 
+                    #want dan zitten beide ongelijkheden dus op verschillende plekken in de puzzel zonder overlap.
+                    for k in range(len(ong[i])-1):
+                        for l in range(len(ong[j])-1):
+                            if ong[i][k][0] == ong[j][l][0]:
+                                doen = True
+                                break
+                        if doen == True:
+                            break
+                    if doen == True:
+                        optellen(ong[i],ong[j])
+             
     #stop als de functie niet uniek oplosbaar is.
     if stop == True:
         print('Error, is niet uniek oplosbaar')
         break
     
+
+antwoord.sort()
 print(antwoord)
+end = time.time()
+print(end - start)
+
+
+
