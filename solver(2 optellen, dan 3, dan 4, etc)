@@ -1,0 +1,551 @@
+#input
+hoogte = 
+breedte = 
+hints = 
+zwarte_velden = 
+
+#lege lijsten die we later nodig hebben.
+vakjesinclkruisjes = []
+ong = []
+antwoord = []
+kruisjes = []
+
+#hieronder worden de hintvelden toegevoegd aan de zwarte velden.
+for i in range(len(hints)):
+    zwarte_velden.append(hints[i][1])
+
+#hieronder wordt een lijst gemaakt met alle vakjes.
+for i in range(1,breedte+1):
+    for j in range(1,hoogte+1):
+        vakjesinclkruisjes.append([i,j])
+
+#hieronder wordt gezorgd dat de zwarte velden uit de lijst met vakjes gehaald worden, 
+#zodat je alleen de witte vakjes overhoudt, genaamd 'vakjesinclkruisjes'.
+for i in range(len(zwarte_velden)):
+    if zwarte_velden[i] in vakjesinclkruisjes:
+        vakjesinclkruisjes.remove(zwarte_velden[i])
+            
+lege_vakjes = [] #we moeten ook bijhouden welke witte vakjes leeg zijn, dus ook geen kruisje bevatten.
+for i in range(len(vakjesinclkruisjes)):
+    lege_vakjes.append(vakjesinclkruisjes[i])
+
+def omhint(vakje): # deze functie geeft de lege vakjes om een hint.
+    omheen = []
+    lijn = [0,0]
+    if [vakje[0],vakje[1]+1] in lege_vakjes: #dit voegt het vakje erboven toe als die leeg is.
+        omheen += [[vakje[0],vakje[1]+1]]
+        lijn[1] += 1
+    if [vakje[0],vakje[1]-1] in lege_vakjes: #dit voegt het vakje eronder toe als die leeg is.
+        omheen += [[vakje[0],vakje[1]-1]]
+        lijn[1] -= 1
+    if [vakje[0]+1,vakje[1]] in lege_vakjes: #dit voegt het vakje rechts toe als die leeg is.
+        omheen += [[vakje[0]+1,vakje[1]]]
+        lijn[0] += 1
+    if [vakje[0]-1,vakje[1]] in lege_vakjes: #dit voegt het vakje links toe als die leeg  is.
+        omheen += [[vakje[0]-1,vakje[1]]]
+        lijn[0] -= 1
+    isnietlijn = True
+    if lijn == [0,0]:  #dit is voor het geval dat bij een 1 hint de twee vrije vakjes tegenover elkaar staan, want dan kan je geen kruisjes zetten.
+        isnietlijn = False
+    return [omheen,isnietlijn]
+
+nognuttig = True
+while nognuttig: #hiermee vullen we al een aantal kruisjes en lampjes in, zodat we later minder ongelijkheden hebben.
+    nognuttig = False
+    verwijderen = [False]*len(hints)
+    #we willen ook weten op welke vakjes de hints staan.
+    hintloc = []
+    for i in range(len(hints)):
+        hintloc.append(hints[i][1])
+    for i in range(len(hints)):
+        hintvakje = hints[i][1]
+        omvakjes = []
+        
+        for j in range(len(omhint(hintvakje)[0])):
+            omvakjes.append(omhint(hintvakje)[0][j])
+        if hints[i][0] == 0: #bij een 0 hint kunnen we er kruisjes omheenzetten.
+            for j in range(len(omvakjes)):
+                if omvakjes[j] in kruisjes:
+                    pass
+                else:
+                    kruisjes.append(omvakjes[j])
+                    lege_vakjes.remove(omvakjes[j])
+            verwijderen[i]=True
+            nognuttig = True
+        elif len(omvakjes) == hints[i][0]: #als het aantal vrije vakjes gelijk is aan de hint kunnen we op die vakjes lampjes zetten.
+            for j in range(len(omvakjes)):
+                antwoord.append(omvakjes[j])
+                vakjesinclkruisjes.remove(omvakjes[j])
+                lege_vakjes.remove(omvakjes[j]) 
+                if [omvakjes[j][0]-1,omvakjes[j][1]] in hintloc and [omvakjes[j][0]-1,omvakjes[j][1]] != hints[i][1]:
+                    hints[hintloc.index([omvakjes[j][0]-1,omvakjes[j][1]])][0] = hints[hintloc.index([omvakjes[j][0]-1,omvakjes[j][1]])][0] - 1
+                if [omvakjes[j][0],omvakjes[j][1]-1] in hintloc and [omvakjes[j][0],omvakjes[j][1]-1] != hints[i][1]:
+                    hints[hintloc.index([omvakjes[j][0],omvakjes[j][1]-1])][0] = hints[hintloc.index([omvakjes[j][0],omvakjes[j][1]-1])][0] - 1
+                if [omvakjes[j][0]+1,omvakjes[j][1]] in hintloc and [omvakjes[j][0]+1,omvakjes[j][1]] != hints[i][1]:
+                    hints[hintloc.index([omvakjes[j][0]+1,omvakjes[j][1]])][0] = hints[hintloc.index([omvakjes[j][0]+1,omvakjes[j][1]])][0] - 1
+                if [omvakjes[j][0],omvakjes[j][1]+1] in hintloc and [omvakjes[j][0],omvakjes[j][1]+1] != hints[i][1]:
+                    hints[hintloc.index([omvakjes[j][0],omvakjes[j][1]+1])][0] = hints[hintloc.index([omvakjes[j][0],omvakjes[j][1]+1])][0] - 1
+                
+                #nu kunnen we kruisjes zetten in de rij en kolom van de hint.
+                x = omvakjes[j][0]
+                y = omvakjes[j][1]
+                j=1
+                nog_niet_klaar = True
+                while nog_niet_klaar and x+j <= breedte: #zoekt voor vakjes rechts van het lampje.
+                    if [x+j,y] in zwarte_velden:
+                        nog_niet_klaar = False
+                    else:
+                        if [x+j,y] in lege_vakjes:
+                            lege_vakjes.remove([x+j,y])
+                        j += 1
+                j = 1
+                nog_niet_klaar = True
+                while nog_niet_klaar and x-j > 0: #zoekt voor vakjes links van het lampje.
+                    if [x-j,y] in zwarte_velden:
+                        nog_niet_klaar = False
+                    else:
+                        if [x-j,y] in lege_vakjes:
+                            lege_vakjes.remove([x-j,y])
+                        j += 1
+                j = 1
+                nog_niet_klaar = True
+                while nog_niet_klaar and y+j <= hoogte: #zoekt voor vakjes boven het lampje.
+                    if [x,y+j] in zwarte_velden:
+                        nog_niet_klaar = False
+                    else:
+                        if [x,y+j] in lege_vakjes:
+                            lege_vakjes.remove([x,y+j])
+                        j += 1
+                j = 1
+                nog_niet_klaar = True
+                while nog_niet_klaar and y-j > 0: #zoekt voor vakjes onder het lampje.
+                    if [x,y-j] in zwarte_velden:
+                        nog_niet_klaar = False
+                    else:
+                        if [x,y-j] in lege_vakjes:
+                            lege_vakjes.remove([x,y-j])
+                        j += 1
+                        
+            verwijderen[i] = True
+            nognuttig = True
+            
+        elif len(omvakjes) == hints[i][0]+1: #in dit geval kunnen we kruisjes zetten op vakjes die een hoekpunt gemeen hebben met de hint.
+            
+            if hints[i][0] == 3:
+                if [hintvakje[0]-1,hintvakje[1]-1] in lege_vakjes:
+                    kruisjes.append([hintvakje[0]-1,hintvakje[1]-1])
+                    lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]-1])
+                    nognuttig = True
+                if [hintvakje[0]-1,hintvakje[1]+1] in lege_vakjes:
+                    kruisjes.append([hintvakje[0]-1,hintvakje[1]+1])
+                    lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]+1])
+                    nognuttig = True
+                if [hintvakje[0]+1,hintvakje[1]-1] in lege_vakjes:
+                    kruisjes.append([hintvakje[0]+1,hintvakje[1]-1])
+                    lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]-1])
+                    nognuttig = True
+                if [hintvakje[0]+1,hintvakje[1]+1] in lege_vakjes:
+                    kruisjes.append([hintvakje[0]+1,hintvakje[1]+1])
+                    lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]+1])
+                    nognuttig = True
+            if hints[i][0] == 2:
+                if [hintvakje[0]-1,hintvakje[1]-1] in lege_vakjes and [hintvakje[0]-1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]-1] in lege_vakjes:
+                    kruisjes.append([hintvakje[0]-1,hintvakje[1]-1])
+                    lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]-1])
+                    nognuttig = True
+                if [hintvakje[0]-1,hintvakje[1]+1] in lege_vakjes and [hintvakje[0]-1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]+1] in lege_vakjes:
+                    kruisjes.append([hintvakje[0]-1,hintvakje[1]+1])
+                    lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]+1])
+                    nognuttig = True
+                if [hintvakje[0]+1,hintvakje[1]-1] in lege_vakjes and [hintvakje[0]+1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]-1] in lege_vakjes:
+                    kruisjes.append([hintvakje[0]+1,hintvakje[1]-1])
+                    lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]-1])
+                    nognuttig = True
+                if [hintvakje[0]+1,hintvakje[1]+1] in lege_vakjes and [hintvakje[0]+1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]+1] in lege_vakjes:
+                    kruisjes.append([hintvakje[0]+1,hintvakje[1]+1])
+                    lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]+1]) 
+                    nognuttig = True
+            if hints[i][0] == 1 and omhint(hintvakje)[1]: 
+                if [omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]] in lege_vakjes:
+                    lege_vakjes.remove([omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]])
+                    kruisjes.append([omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]])
+                    nognuttig = True
+    
+    k=len(hints)
+    for i in range(0,k): #de volledig ingevulde hints fungeren slechts als een zwart veld, dus die halen we weg uit de lijst met hints.
+        if verwijderen[k-i-1]:
+            del hints[k-i-1] 
+         
+#deze functie vindt de witte kolom waar elk wit vakje in zit .        
+def Kolommen(x,y):
+    kolom = [[x,y]]
+    nog_niet_klaar = True
+    i=1
+    while nog_niet_klaar and y-i >0:
+        if [x,y-i] in zwarte_velden:
+            nog_niet_klaar = False
+        else:
+            kolom += [[x,y-i]]
+            i += 1
+    nog_niet_klaar = True
+    i=1
+    while nog_niet_klaar and y+i<= hoogte:
+        if [x,y+i] in zwarte_velden:
+            nog_niet_klaar = False
+        else:
+            kolom += [[x,y+i]]
+            i += 1
+    kolom.sort()
+    return kolom
+
+#deze functie vindt de witte rij waar elk wit vakje in zit.
+def Rijen(x,y):
+    rij = [[x,y]]    
+    nog_niet_klaar = True
+    i=1
+    while nog_niet_klaar and x-i>0:
+        if [x-i,y] in zwarte_velden:
+            nog_niet_klaar = False
+        else:
+            rij += [[x-i,y]]
+            i += 1
+    nog_niet_klaar = True
+    i=1
+    while nog_niet_klaar and x+i <= breedte:
+        if [x+i,y] in zwarte_velden:
+            nog_niet_klaar = False
+        else:
+            rij += [[x+i,y]]
+            i += 1    
+    rij.sort()
+    return rij
+
+#deze functie combineert de rijen en kolommen zodat voor elk vakje een 'omgeving' ontstaat, 
+#oftewel, alle witte vakjes die dat vakje kan zien. Daarin moet minimaal 1 lampje, 
+#dus dat is een vergelijking met >= teken. We voegen meteen de coefficienten toe,
+#dus hoe vaak elk vakje voorkomt in de omgeving. Dat is steeds 1, maar voor later is dit belangrijk.
+#We vermenigvuldigen beide kanten met -1, zodat de >= overgaat in een <= teken. 
+#Daarna voegt het de omgevingen als ongelijkheden toe aan het uiteindelijke stelsel ongelijkheden.        
+def omgaanongtoevoegen(rij,kolom):
+    omgpervakje = []
+    for k in range(len(rij)):
+        omgpervakje.append(rij[k])
+    for k in range(len(kolom)):
+        if kolom[k] not in omgpervakje:
+            omgpervakje.append(kolom[k])
+    omgpervakje.sort()
+    for k in range(len(omgpervakje)):
+        omgpervakje[k] = [omgpervakje[k],-1]
+    omgpervakje.append(-1)
+    if omgpervakje not in ong:    
+        ong.append(omgpervakje)
+        
+#deze functie voegt de rijen en kolommen als ongelijkheden toe aan het uiteindelijke stelsel ongelijkheden, 
+#waarbij aan de 'rechterkant' van elke kolom en rij (de laatste index) een 1 komt te staan, als in:
+#de linkerkant kan maximaal 1 zijn, er kan namelijk maar 1 lampje in een rij of kolom. \
+#Deze ongelijkheden hebben dus ook de vorm ... <= ... .
+#De coefficienten van de vakjes in de rijen en kolommen worden ook toegevoegd. 
+#Die zijn nu 1, maar dat komt later van pas.
+def rijkolomaanongtoevoegen(a):
+    b = []
+    for i in range(len(a)):
+        b.append([a[i],1])
+    b.append(1)
+    if b not in ong:
+        ong.append(b)
+
+#hieronder wordt voor elke rij en kolom de functie rijkolomaanongtoevoegen opgeroepen. 
+#Alleen de lege vakjes van rijen en kolommen met meer dan 1 leeg vakje worden toegevoegd, want van rijen of kolommen
+#met 1 leeg vakje is natuurlijk duidelijk dat die sowieso maar maximaal 1 lampje kunnen bevatten, 
+#dat is niks nieuws. De functie omgaanongtoevoegen wordt ook aangeroepen om de omgevingen van elk vakje, 
+#of eigenlijkl alleen de lege vakjes in de omgevingen van elk vakje,
+#in de lijst ongelijkheden te zetten. Er worden alleen omgevingen toegevoegd als er in die omgeving 
+#nog geen lampje staat, want er moet minimaal 1 lampje in een omgeving,
+#dus als er al een lampje staat heb je er niks aan. 
+#Er worden ook alleen rijen of kolommen zonder lampje toegevoegd, want als er in een rij of een kolom
+#al een lampje staat hebben die ongelijkheden ook weinig nut, er staat immers al een lampje in, 
+#die ongelijkheden brengen geen extra informatie.
+for i in range(len(vakjesinclkruisjes)):
+    lampjekolom = 0
+    lampjerij = 0
+    
+    rij = Rijen(vakjesinclkruisjes[i][0], vakjesinclkruisjes[i][1])
+    for j in range(len(antwoord)):
+        if antwoord[j] in rij:
+            lampjerij = 1
+            break
+    for j in range(len(rij)-1,-1,-1):
+        if rij[j] not in lege_vakjes:
+            rij.pop(j)
+    kolom = Kolommen(vakjesinclkruisjes[i][0], vakjesinclkruisjes[i][1])
+    for j in range(len(antwoord)):
+        if antwoord[j] in kolom:
+            lampjekolom = 1
+            break
+    for j in range(len(kolom)-1,-1,-1):
+        if kolom[j] not in lege_vakjes:
+            kolom.pop(j)
+       
+    if lampjerij + lampjekolom == 0:
+        omgaanongtoevoegen(rij,kolom)
+    if len(rij)>1 and lampjerij == 0:
+        rijkolomaanongtoevoegen(rij)
+    if len(kolom)>1 and lampjekolom == 0:
+        rijkolomaanongtoevoegen(kolom)
+
+#hieronder wordt voor elke resterende hint gezocht welke lege vakjes grenzen aan de hint, 
+#dan worden die vakjes toegevoegd aan 2 ongelijkheden, want er moeten twee ongelijkheden komen voor elke hint.
+#1 die zegt dat de grenzende vakjes minimaal het hintgetal aan lampjes kunnen bevatten,
+#en 1 die zegt dat de grenzende vakjes maximaal het hintgetal aan lampjes kunnen bevatten. 
+#Die laatste wordt met -1 vermenigvuldigt zodat ook die overgaat in een <= teken. 
+#Als laatste worden alle losse hintongelijkheden toegevoegd aan de uiteindelijke lijst ongelijkheden. 
+for i in range(len(hints)):
+    lossemaxhint = []
+    lossenegmaxhint = []
+    if [hints[i][1][0],hints[i][1][1]+1] in lege_vakjes: #dit voegt het vakje erboven toe als die leeg is
+        lossemaxhint.append([[hints[i][1][0],hints[i][1][1]+1],1])
+        lossenegmaxhint.append([[hints[i][1][0],hints[i][1][1]+1],-1])
+    if [hints[i][1][0],hints[i][1][1]-1] in lege_vakjes: #dit voegt het vakje eronder toe als die leeg is
+        lossemaxhint.append([[hints[i][1][0],hints[i][1][1]-1],1])
+        lossenegmaxhint.append([[hints[i][1][0],hints[i][1][1]-1],-1])
+    if [hints[i][1][0]+1,hints[i][1][1]] in lege_vakjes: #dit voegt het vakje rechts toe als die leeg is
+        lossemaxhint.append([[hints[i][1][0]+1,hints[i][1][1]],1])
+        lossenegmaxhint.append([[hints[i][1][0]+1,hints[i][1][1]],-1])
+    if [hints[i][1][0]-1,hints[i][1][1]] in lege_vakjes: #dit voegt het vakje links toe als die leeg  is
+        lossemaxhint.append([[hints[i][1][0]-1,hints[i][1][1]],1])
+        lossenegmaxhint.append([[hints[i][1][0]-1,hints[i][1][1]],-1])
+    lossemaxhint.sort()
+    lossenegmaxhint.sort()
+    lossemaxhint.append(hints[i][0])
+    lossenegmaxhint.append(-1*hints[i][0])
+    ong.append(lossemaxhint)
+    ong.append(lossenegmaxhint) 
+      
+#Een oplettend lezer zou hebben opgemerkt dat ong, de uiteindelijke lijst 
+#ongelijkheden die moet worden opgelost, alleen ongelijkheden in de vorm ...<=... bevat. 
+#En dat de variabelen, de vakjes, alleen de waarden 0 en 1 kunnen aannemen: 0 als ze geen lampje bevatten,
+#1 als ze wel een lampje bevatten.
+
+#de onderstaande functie telt een verzameling ongelijkheden bij elkaar op en stopt die in de lijst met ongelijkheden.
+def optellen(comb):
+    optelling = []
+    rechterkant = 0
+    for i in range(len(comb)):
+        for j in range(len(comb[i])-1):
+            zitalinA = False
+            for k in range(len(optelling)-1,-1,-1):
+                if comb[i][j][0] == optelling[k][0]:
+                    optelling[k][1] = optelling[k][1]+comb[i][j][1]
+                    if optelling[k][1] == 0:
+                        optelling.pop(k)
+                    zitalinA = True
+                    break
+            if zitalinA == False:
+                optelling.append([comb[i][j][0],comb[i][j][1]])
+        rechterkant += comb[i][-1]
+    optelling.sort()
+    optelling.append(rechterkant)
+    if optelling not in ong:
+        ong.append(optelling)
+
+#deze functie haalt uit elke vergelijking en uit de lijst met vakjes een vakje weg als 
+#blijkt dat op dat vakje geen lampje kan staan. 
+def kruisjeseruit(a):
+    lege_vakjes.remove(a)
+    for i in range(len(ong)):
+        for j in range(len(ong[i])-2,-1,-1):
+            if a == ong[i][j][0]:
+                ong[i].pop(j)
+              
+#deze functie haalt uit elke vergelijking en uit de lijst met vakjes een vakje weg als 
+#blijkt dat op dat vakje een lampje staat, en voegt dat vakje toe aan het uiteindelijke antwoord. 
+#Ook vermindert de functie de rechterkant van de ongelijkheid met de coefficient 
+#van de variabele/het vakje waar het lampje stond.           
+def lampjeseruit(a):
+    lege_vakjes.remove(a)
+    antwoord.append(a)
+    for i in range(len(ong)):
+        for j in range(len(ong[i])-2,-1,-1):
+            if a == ong[i][j][0]:
+                ong[i][-1] = ong[i][-1] - ong[i][j][1]
+                ong[i].pop(j)
+
+#hieronder wordt een kopie gemaakt van de ongelijkheden, om later te kunnen zien welke ongelijkheden
+#van het begin af aan in de lijst met ongelijkheden stonden.
+oorspronkelijkeong = []
+for i in range(len(ong)):
+    oorspronkelijkeong.append(ong[i])
+
+#een boolean die aangeeft als de functie moet stoppen omdat de puzzel niet uniek oplosbaar is. 
+stop = False
+
+#de hoeveelheid ongelijkheden die verderop in de code steeds bij elkaar moeten worden opgeteld.
+z = 2
+
+#de while loop-voorwaarde betekent: zolang er nog witte vakjes geen waarde 0 of 1 toegekend hebben gekregen.
+while lege_vakjes != []:
+    #hieronder wordt een kopie gemaakt van de nog lege vakjes
+    vakjessave = []
+    for i in range(len(lege_vakjes)):
+        vakjessave.append(lege_vakjes[i])
+    
+    #hieronder staat een loop die voor elke ongelijkheid kijkt of er nullen of enen geforceerd kunnen worden.
+    for i in range(len(ong)-1, -1, -1): 
+        #als alleen de rechterkant over is, haal de ongelijkheid uit de lijst.
+        if len(ong[i]) == 1:
+            ong.pop(i)
+            #als die ongelijkheid in de oorspronkelijke ongelijkheden zat, haal hem daar dan ook uit.
+            if i in range(len(oorspronkelijkeong)):
+                oorspronkelijkeong.pop(i)
+        #anders, kijk voor elk vakje in de ongelijkheid of je een 0 respectievelijk 1
+        #kan forceren, en roep dan kruisjeseruit respectievelijk lampjeseruit aan om die vakjes
+        #uit alle ongelijkheden te halen. 
+        else:
+            for j in range(len(ong[i])-2, -1, -1):
+                linkerkant = ong[i][-1]
+                for k in [x for x in range(len(ong[i])-2,-1,-1) if x != j]:
+                    if ong[i][k][1] < 0:
+                        linkerkant = linkerkant - ong[i][k][1]
+                if ong[i][j][1] < 0 and linkerkant <= ong[i][j][1]:
+                    lampjeseruit(ong[i][j][0])
+                elif ong[i][j][1] > 0 and linkerkant < ong[i][j][1]:
+                    kruisjeseruit(ong[i][j][0])
+    
+    #de onderstaande code vergelijkt de nog lege vakjes met de kopie van de oude nog lege vakjes, 
+    #als er niks veranderd is heeft de loop dus nieuwe informatie nodig en worden er 
+    #rijen bij elkaar opgeteld zodat daar weer informatie uit kan worden gehaald. Er worden hier ook
+    #onnodige ongelijkheden uit de lijst met ongelijkheden gehaald.
+    #Als er bij deze stap nog maar 1 vergelijking over is betekent dat dat de puzzel niet uniek oplosbaar is. 
+    if vakjessave == lege_vakjes:
+        if len(ong) == 1:
+            stop = True
+        else:
+            #voor elke ongelijkheid, als alleen de rechterkant over is, haal de ongelijkheid uit de lijst.
+            #haal die ongelijkheid dan ook uit de oorspronkelijke lijst indien die erin zat.
+            for i in range(len(ong)-1,-1,-1):
+                if len(ong[i]) == 1:
+                    ong.pop(i)
+                    if i in range(len(oorspronkelijkeong)):
+                        oorspronkelijkeong.pop(i)
+          
+            #als er dubbele ongelijkheden in de lijst zitten, zorg dat de duplicaten eruit worden gehaald.
+            #haal die ongelijkheid dan ook uit de oorspronkelijke lijst indien die erin zat. 
+            for i in range(len(ong)-1,-1,-1):
+                for j in range(i):
+                    if ong[i] == ong[j]:
+                        ong.pop(i)
+                        if i in range(len(oorspronkelijkeong)):
+                            oorspronkelijkeong.pop(i)
+                        break
+            
+            #hieronder wordt voor elke ongelijkheid gekeken of er überhaupt nog nuttige informatie in zit, 
+            #anders wordt de ongelijkheid eruit gehaald, namelijk als je voor elk vakje met positieve coefficient een lampje in zou
+            #kunnen vullen en je nog niet aan de positieve maximumwaarde aan de rechterkant van de ongelijkheid komt. 
+            #Haal die ongelijkheid dan ook uit de oorspronkelijke lijst indien die erin zat.
+            for i in range(len(ong)-1,-1,-1):
+                maximum = 0
+                for j in range(len(ong[i])-1):
+                    if ong[i][j][1] > 0:
+                        maximum = maximum + ong[i][j][1]
+                if maximum <= ong[i][-1]:
+                    ong.pop(i)
+                    if i in range(len(oorspronkelijkeong)):
+                        oorspronkelijkeong.pop(i)
+            
+            #onderstaande loop kijkt voor elke twee vergelijkingen of de ene minimaal dezelfde informatie bevat
+            #als de andere, dan wordt die andere eruit gehaald, die is immers overbodig. Haal die ongelijkheid
+            #dan ook uit de oorspronkelijke lijst, indien die erin zat. Deze loop wordt verder uitgelegd
+            #in het verslag.
+            verwijderen = []
+            for i in range(len(ong)-1,-1,-1):
+                for j in range(i):   
+                    if len(ong[j]) != len(ong[i]):
+                        if len(ong[j]) > len(ong[i]):
+                            a = ong[i]
+                            b = ong[j]
+                        if len(ong[j]) < len(ong[i]):
+                            a = ong[j]
+                            b = ong[i]
+                        verschil = []
+                        for k in range(len(b)-1):
+                            verschil.append(b[k])
+                        nuttig = True
+                        for k in range(len(a)-1):
+                            if a[k] not in verschil:
+                                nuttig = False
+                                break
+                            else:
+                                verschil.remove(a[k])
+                        if nuttig == True:
+                            bsterker = True
+                            asterker = True
+                            if b[-1] > a[-1]:
+                                bsterker = False
+                            else:
+                                for k in range(len(verschil)):
+                                    if verschil[k][1] < 0:
+                                        bsterker = False
+                                        break
+                            if a[-1] > b[-1]:
+                                asterker = False
+                            else:
+                                for k in range(len(verschil)):
+                                    if verschil[k][1] > 0:
+                                        asterker = False
+                                        break
+                            if asterker == True:
+                                if b == ong[i]:
+                                    ong.pop(i)
+                                    if i in range(len(oorspronkelijkeong)):
+                                        oorspronkelijkeong.pop(i)
+                                    break
+                                else:
+                                    if b not in verwijderen:
+                                        verwijderen.append(b)
+                            if bsterker == True:
+                                if a == ong[i]:
+                                    ong.pop(i)
+                                    if i in range(len(oorspronkelijkeong)):
+                                        oorspronkelijkeong.pop(i)
+                                    break
+                                else:
+                                    if a not in verwijderen:
+                                        verwijderen.append(a)         
+            for i in range(len(verwijderen)):
+                if verwijderen[i] in ong:
+                    ong.remove(verwijderen[i])
+                if verwijderen[i] in oorspronkelijkeong:
+                    oorspronkelijkeong.remove(verwijderen[i]) 
+
+            #de onderstaande loop roept de functie ´optellen´ aan voor alle mogelijke combinaties
+            #van grootte z van ongelijkheden.
+            #dit gebeurt alleen als de variabelen in de ongelijkheden aan een bepaalde voorwaarde voldoen, dit
+            #wordt verder uitgelegd in het verslag.
+            if z <= len(oorspronkelijkeong):
+                for comb in itertools.combinations(oorspronkelijkeong, z):
+                    comb = list(comb)
+                    uniekevar = []
+                    aantalnietuniek = 0
+                    for k in range(len(comb)):
+                        for l in range(len(comb[k])-1):
+                            if comb[k][l][0] not in uniekevar:
+                                uniekevar.append(comb[k][l][0])
+                        aantalnietuniek += len(comb[k])-1
+                    aantaluniek = len(uniekevar)
+                    if aantalnietuniek - aantaluniek > z - 2:
+                        optellen(comb) 
+                #alle nuttige combinaties van grootte z zijn bij elkaar opgeteld, 
+                #dus de volgende keer wordt het grootte z+1.
+                z+=1
+            #als z groter is dan het aantal ongelijkheden betekent dat dat er na alle mogelijke optellingen
+            #van ongelijkheden nog steeds niet genoeg informatie is. De puzzel is dan dus niet uniek oplosbaar.
+            else:
+                print('Error, is niet uniek oplosbaar')
+                break
+                      
+    #stop als de functie niet uniek oplosbaar is.
+    if stop == True:
+        print('Error, is niet uniek oplosbaar')
+        break
+    
+print(antwoord)
