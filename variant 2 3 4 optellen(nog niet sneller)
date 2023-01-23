@@ -16,27 +16,23 @@ zwarte_velden = [[5,1],[6,8],[6,9],[8,8],[9,1]]
 vakjesinclkruisjes = []
 ong = []
 antwoord = []
-kruisjes = []
+lege_vakjes = []
 
 #hieronder worden de hintvelden toegevoegd aan de zwarte velden.
 for i in range(len(hints)):
     zwarte_velden.append(hints[i][1])
-
 #hieronder wordt een lijst gemaakt met alle vakjes.
 for i in range(1,breedte+1):
     for j in range(1,hoogte+1):
         vakjesinclkruisjes.append([i,j])
-
 #hieronder wordt gezorgd dat de zwarte velden uit de lijst met vakjes gehaald worden, 
 #zodat je alleen de witte vakjes overhoudt, genaamd 'vakjesinclkruisjes'.
 for i in range(len(zwarte_velden)):
     if zwarte_velden[i] in vakjesinclkruisjes:
         vakjesinclkruisjes.remove(zwarte_velden[i])
 
-lege_vakjes = [] #we moeten ook bijhouden welke witte vakjes leeg zijn, dus ook geen kruisje bevatten.
-for i in range(len(vakjesinclkruisjes)):
+for i in range(len(vakjesinclkruisjes)): #we moeten ook bijhouden welke witte vakjes leeg zijn, dus ook geen kruisje bevatten.
     lege_vakjes.append(vakjesinclkruisjes[i])
-
 def omhint(vakje): # deze functie geeft de lege vakjes om een hint.
     omheen = []
     lijn = [0,0]
@@ -73,10 +69,7 @@ while nognuttig: #hiermee vullen we al een aantal kruisjes en lampjes in, zodat 
             omvakjes.append(omhint(hintvakje)[0][j])
         if hints[i][0] == 0: #bij een 0 hint kunnen we er kruisjes omheenzetten.
             for j in range(len(omvakjes)):
-                if omvakjes[j] in kruisjes:
-                    pass
-                else:
-                    kruisjes.append(omvakjes[j])
+                if omvakjes[j] in lege_vakjes:
                     lege_vakjes.remove(omvakjes[j])
             verwijderen[i]=True
             nognuttig = True
@@ -141,42 +134,33 @@ while nognuttig: #hiermee vullen we al een aantal kruisjes en lampjes in, zodat 
 
             if hints[i][0] == 3:
                 if [hintvakje[0]-1,hintvakje[1]-1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]-1,hintvakje[1]-1])
                     lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]-1])
                     nognuttig = True
                 if [hintvakje[0]-1,hintvakje[1]+1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]-1,hintvakje[1]+1])
                     lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]+1])
                     nognuttig = True
                 if [hintvakje[0]+1,hintvakje[1]-1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]+1,hintvakje[1]-1])
                     lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]-1])
                     nognuttig = True
                 if [hintvakje[0]+1,hintvakje[1]+1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]+1,hintvakje[1]+1])
                     lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]+1])
                     nognuttig = True
             if hints[i][0] == 2:
                 if [hintvakje[0]-1,hintvakje[1]-1] in lege_vakjes and [hintvakje[0]-1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]-1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]-1,hintvakje[1]-1])
                     lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]-1])
                     nognuttig = True
                 if [hintvakje[0]-1,hintvakje[1]+1] in lege_vakjes and [hintvakje[0]-1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]+1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]-1,hintvakje[1]+1])
                     lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]+1])
                     nognuttig = True
                 if [hintvakje[0]+1,hintvakje[1]-1] in lege_vakjes and [hintvakje[0]+1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]-1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]+1,hintvakje[1]-1])
                     lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]-1])
                     nognuttig = True
                 if [hintvakje[0]+1,hintvakje[1]+1] in lege_vakjes and [hintvakje[0]+1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]+1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]+1,hintvakje[1]+1])
                     lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]+1]) 
                     nognuttig = True
             if hints[i][0] == 1 and omhint(hintvakje)[1]: 
                 if [omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]] in lege_vakjes:
                     lege_vakjes.remove([omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]])
-                    kruisjes.append([omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]])
                     nognuttig = True
 
     k=len(hints)
@@ -292,7 +276,7 @@ for i in range(len(vakjesinclkruisjes)):
             break
     for j in range(len(rij)-1,-1,-1):
         if rij[j] not in lege_vakjes:
-            rij.pop(j)
+            del rij[j]
     kolom = Kolommen(vakjesinclkruisjes[i][0], vakjesinclkruisjes[i][1])
     for j in range(len(antwoord)):
         if antwoord[j] in kolom:
@@ -300,7 +284,7 @@ for i in range(len(vakjesinclkruisjes)):
             break
     for j in range(len(kolom)-1,-1,-1):
         if kolom[j] not in lege_vakjes:
-            kolom.pop(j)
+            del kolom[j]
 
     if lampjerij + lampjekolom == 0:
         omgaanongtoevoegen(rij,kolom)
@@ -353,7 +337,7 @@ def optellen(comb):
                 if oorspronkelijkeong[comb[i]][j][0] == optelling[k][0]:
                     optelling[k][1] = optelling[k][1]+oorspronkelijkeong[comb[i]][j][1]
                     if optelling[k][1] == 0:
-                        optelling.pop(k)
+                        del optelling[k]
                     zitalinA = True
                     break
             if zitalinA == False:
@@ -371,7 +355,7 @@ def kruisjeseruit(a):
     for i in range(len(ong)):
         for j in range(len(ong[i])-2,-1,-1):
             if a == ong[i][j][0]:
-                ong[i].pop(j)
+                del ong[i][j]
     for i in uniek:
         if  a in uniek[i]:
             uniek[i].remove(a)
@@ -388,7 +372,7 @@ def lampjeseruit(a):
         for j in range(len(ong[i])-2,-1,-1):
             if a == ong[i][j][0]:
                 ong[i][-1] = ong[i][-1] - ong[i][j][1]
-                ong[i].pop(j)
+                del ong[i][j]
     for i in uniek:
         if  a in uniek[i]:
             uniek[i].remove(a)
@@ -427,7 +411,7 @@ while lege_vakjes != []:
             #als die ongelijkheid in de oorspronkelijke ongelijkheden zat, haal hem daar dan ook uit.
             if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
                 oorspindex.remove(oorspronkelijkeong.index(ong[i]))
-            ong.pop(i)
+            del ong[i]
         #anders, kijk voor elk vakje in de ongelijkheid of je een 0 respectievelijk 1
         #kan forceren, en roep dan kruisjeseruit respectievelijk lampjeseruit aan om die vakjes
         #uit alle ongelijkheden te halen. 
@@ -457,7 +441,7 @@ while lege_vakjes != []:
                 if len(ong[i]) == 1:
                     if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
                         oorspindex.remove(oorspronkelijkeong.index(ong[i]))
-                    ong.pop(i)
+                    del ong[i]
 
             #als er dubbele ongelijkheden in de lijst zitten, zorg dat de duplicaten eruit worden gehaald.
             #haal die ongelijkheid dan ook uit de oorspronkelijke lijst indien die erin zat. 
@@ -466,7 +450,7 @@ while lege_vakjes != []:
                     if ong[i] == ong[j]:
                         if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
                             oorspindex.remove(oorspronkelijkeong.index(ong[i]))
-                        ong.pop(i)
+                        del ong[i]
                         break
 
             #hieronder wordt voor elke ongelijkheid gekeken of er überhaupt nog nuttige informatie in zit, 
@@ -481,7 +465,7 @@ while lege_vakjes != []:
                 if maximum <= ong[i][-1]:      
                     if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
                         oorspindex.remove(oorspronkelijkeong.index(ong[i]))
-                    ong.pop(i)
+                    del ong[i]
 
             #onderstaande loop kijkt voor elke twee vergelijkingen of de ene minimaal dezelfde informatie bevat
             #als de andere, dan wordt die andere eruit gehaald, die is immers overbodig. Haal die ongelijkheid
@@ -528,7 +512,7 @@ while lege_vakjes != []:
                                 if b == ong[i]:
                                     if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
                                         oorspindex.remove(oorspronkelijkeong.index(ong[i]))
-                                    ong.pop(i)
+                                    del ong[i]
                                     break
                                 else:
                                     if b not in verwijderen:
@@ -537,7 +521,7 @@ while lege_vakjes != []:
                                 if a == ong[i]:    
                                     if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
                                         oorspindex.remove(oorspronkelijkeong.index(ong[i]))
-                                    ong.pop(i)
+                                    del ong[i]
                                     break
                                 else:
                                     if a not in verwijderen:
