@@ -8,7 +8,7 @@ zwarte_velden =
 vakjesinclkruisjes = []
 ong = []
 antwoord = []
-kruisjes = []
+lege_vakjes = []
 
 #hieronder worden de hintvelden toegevoegd aan de zwarte velden.
 for i in range(len(hints)):
@@ -25,8 +25,7 @@ for i in range(len(zwarte_velden)):
     if zwarte_velden[i] in vakjesinclkruisjes:
         vakjesinclkruisjes.remove(zwarte_velden[i])
             
-lege_vakjes = [] #we moeten ook bijhouden welke witte vakjes leeg zijn, dus ook geen kruisje bevatten.
-for i in range(len(vakjesinclkruisjes)):
+for i in range(len(vakjesinclkruisjes)): #we moeten ook bijhouden welke witte vakjes leeg zijn, dus ook geen kruisje bevatten.
     lege_vakjes.append(vakjesinclkruisjes[i])
 
 def omhint(vakje): # deze functie geeft de lege vakjes om een hint.
@@ -65,10 +64,7 @@ while nognuttig: #hiermee vullen we al een aantal kruisjes en lampjes in, zodat 
             omvakjes.append(omhint(hintvakje)[0][j])
         if hints[i][0] == 0: #bij een 0 hint kunnen we er kruisjes omheenzetten.
             for j in range(len(omvakjes)):
-                if omvakjes[j] in kruisjes:
-                    pass
-                else:
-                    kruisjes.append(omvakjes[j])
+                if omvakjes[j] in lege_vakjes:
                     lege_vakjes.remove(omvakjes[j])
             verwijderen[i]=True
             nognuttig = True
@@ -133,42 +129,33 @@ while nognuttig: #hiermee vullen we al een aantal kruisjes en lampjes in, zodat 
             
             if hints[i][0] == 3:
                 if [hintvakje[0]-1,hintvakje[1]-1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]-1,hintvakje[1]-1])
                     lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]-1])
                     nognuttig = True
                 if [hintvakje[0]-1,hintvakje[1]+1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]-1,hintvakje[1]+1])
                     lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]+1])
                     nognuttig = True
                 if [hintvakje[0]+1,hintvakje[1]-1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]+1,hintvakje[1]-1])
                     lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]-1])
                     nognuttig = True
                 if [hintvakje[0]+1,hintvakje[1]+1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]+1,hintvakje[1]+1])
                     lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]+1])
                     nognuttig = True
             if hints[i][0] == 2:
                 if [hintvakje[0]-1,hintvakje[1]-1] in lege_vakjes and [hintvakje[0]-1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]-1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]-1,hintvakje[1]-1])
                     lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]-1])
                     nognuttig = True
                 if [hintvakje[0]-1,hintvakje[1]+1] in lege_vakjes and [hintvakje[0]-1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]+1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]-1,hintvakje[1]+1])
                     lege_vakjes.remove([hintvakje[0]-1,hintvakje[1]+1])
                     nognuttig = True
                 if [hintvakje[0]+1,hintvakje[1]-1] in lege_vakjes and [hintvakje[0]+1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]-1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]+1,hintvakje[1]-1])
                     lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]-1])
                     nognuttig = True
                 if [hintvakje[0]+1,hintvakje[1]+1] in lege_vakjes and [hintvakje[0]+1,hintvakje[1]] in lege_vakjes and [hintvakje[0],hintvakje[1]+1] in lege_vakjes:
-                    kruisjes.append([hintvakje[0]+1,hintvakje[1]+1])
                     lege_vakjes.remove([hintvakje[0]+1,hintvakje[1]+1]) 
                     nognuttig = True
             if hints[i][0] == 1 and omhint(hintvakje)[1]: 
                 if [omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]] in lege_vakjes:
                     lege_vakjes.remove([omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]])
-                    kruisjes.append([omhint(hintvakje)[0][1][0],omhint(hintvakje)[0][0][1]])
                     nognuttig = True
     
     k=len(hints)
