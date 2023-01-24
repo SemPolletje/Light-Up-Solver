@@ -513,10 +513,11 @@ while lege_vakjes != []:
         break
 antwoord.sort()   
 print(antwoord)
-# importing turtle package to draw the chess board using turtle
+# import turtle om het bord te kunnen tekenen
 import turtle
 
-
+#Verander de 'coördinaten' van de zwarte_velden en antwoorden, aangezien deze bij linksonder
+#[1,1] beginnen, terwijl ze in turtle bij [0,0] linksonder beginnen.
 for i in range(len(zwarte_velden)):
     zwarte_velden[i][0] = zwarte_velden[i][0] - 1
     zwarte_velden[i][1] = zwarte_velden[i][1] - 1
@@ -525,52 +526,54 @@ for i in range(len(antwoord)):
     antwoord[i][0] = antwoord[i][0] - 1
     antwoord[i][1] = antwoord[i][1] - 1
 
-# create screen object and turtle object
+# Maak de screen object en pen object via turtle en zet het beginpunt van de screen neer.
 screen = turtle.Screen()
+screen.setworldcoordinates(-1, -1, screen.window_width() - 1, screen.window_height() - 1)
 pen = turtle.Turtle()
   
-# method to draw square
+# het tekenen van een vierkantje
 def draw():
   for i in range(4):
-    pen.forward(int(385/hoogte))
+    pen.forward(int(700/hoogte))
     pen.left(90)
-  pen.forward(int(385/hoogte))
+  pen.forward(int(700/hoogte))
 
-# Main Code to draw the chess board using turtle
+# De code om het bord te laten tekenen
 if __name__ == "__main__" :
       
-    # set screen
+    # Screen setten
     screen.setup(600, 600)
       
-    # set turtle object speed
+    # Snelheid van de 'pen', het turtle object dat gaat tekenen
     pen.speed(1000)
       
-    # loops for board
+    # Loop maken voor het complete bord
     for i in range(breedte):
       
-      # not ready to draw
+      # Nog niet klaar om te tekenen
       pen.up()
       
-      # set position for every row
-      pen.setpos(0, int(385/hoogte) * i)
       
-      # ready to draw
+      # De positie neerzetten voor elke rij
+      pen.setpos(0, int(700/hoogte) * i)
+      
+      # Begin met tekenen
       pen.down()
 
       for j in range(hoogte):
-        # conditions for alternative color
+        # Aanmaken van de kleuren per vakje
         if [j, i] in zwarte_velden:
           color ='black'
         elif [j, i] in antwoord:
-          color = '#9af67b'
+          color = '#00dc00'
         else:
-          color ='#f1ef9e'
-        # fill with given color
+          color ='#f0f032'
+        # Vul het vakje met de gegeven kleur
         pen.fillcolor(color)
-        # start filling with color
+        # Begin het vullen
         pen.begin_fill()
         draw()
         pen.end_fill()
-    # hide the turtle
+    # Laat de pen verdwijnen als het tekenen klaar is
     pen.hideturtle()
     screen.exitonclick()
