@@ -3,7 +3,7 @@ import time
 import sys
 #import itertools om alle mogelijke combinaties van grootte z van een lijst te kunnen vinden
 import itertools
-#import turtle om het bord te kunnen tekenen
+#import turtle om de visualisering van de oplossing te kunnen tekenen
 import turtle
 
 #lege lijsten die we later nodig hebben.
