@@ -368,13 +368,14 @@ def optellen(comb):
             for k in range(len(optelling)-1,-1,-1):
                 if comb[i][j][0] == optelling[k][0]:
                     optelling[k][1] = optelling[k][1]+comb[i][j][1]
-                    if optelling[k][1] == 0:
-                        optelling.pop(k)
                     zitalinA = True
                     break
             if zitalinA == False:
                 optelling.append([comb[i][j][0],comb[i][j][1]])
         rechterkant += comb[i][-1]
+    for i in range(len(optelling)-1,-1,-1):
+        if optelling[i][1] == 0:
+            optelling.pop(i)
     optelling.sort()
     optelling.append(rechterkant)
     if optelling not in ong:
