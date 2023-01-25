@@ -556,8 +556,8 @@ while lege_vakjes != []:
                     oorspronkelijkeong.remove(verwijderen[i]) 
 
             #de onderstaande loop roept de functie ´optellen´ aan voor alle mogelijke combinaties
-            #van grootte z van ongelijkheden.
-            #dit gebeurt alleen als de variabelen in de ongelijkheden aan een bepaalde voorwaarde voldoen, dit
+            #van grootte z van de oorspronkelijke ongelijkheden.
+            #dit gebeurt alleen als de variabelen in de oorspronkelijke ongelijkheden aan een bepaalde voorwaarde voldoen, dit
             #wordt verder uitgelegd in het verslag.
             if z <= len(oorspronkelijkeong):
                 for comb in itertools.combinations(oorspronkelijkeong, z):
