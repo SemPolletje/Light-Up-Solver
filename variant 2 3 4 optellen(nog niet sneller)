@@ -237,6 +237,7 @@ def omgaanongtoevoegen(rij,kolom):
     for k in range(len(omgpervakje)):
         omgpervakje[k] = [omgpervakje[k],-1]
     omgpervakje.append(-1)
+    omgpervakje.append(1)
     if omgpervakje not in ong:    
         ong.append(omgpervakje)
 
@@ -250,6 +251,7 @@ def rijkolomaanongtoevoegen(a):
     b = []
     for i in range(len(a)):
         b.append([a[i],1])
+    b.append(1)
     b.append(1)
     if b not in ong:
         ong.append(b)
@@ -318,6 +320,8 @@ for i in range(len(hints)):
     lossenegmaxhint.sort()
     lossemaxhint.append(hints[i][0])
     lossenegmaxhint.append(-1*hints[i][0])
+    lossemaxhint.append(1)
+    lossenegmaxhint.append(1)
     ong.append(lossemaxhint)
     ong.append(lossenegmaxhint) 
 
@@ -331,7 +335,7 @@ def optellen(comb):
     optelling = []
     rechterkant = 0
     for i in range(len(comb)):
-        for j in range(len(oorspronkelijkeong[comb[i]])-1):
+        for j in range(len(oorspronkelijkeong[comb[i]])-2):
             zitalinA = False
             for k in range(len(optelling)-1,-1,-1):
                 if oorspronkelijkeong[comb[i]][j][0] == optelling[k][0]:
@@ -342,9 +346,16 @@ def optellen(comb):
                     break
             if zitalinA == False:
                 optelling.append([oorspronkelijkeong[comb[i]][j][0],oorspronkelijkeong[comb[i]][j][1]])
-        rechterkant += oorspronkelijkeong[comb[i]][-1]
+        rechterkant += oorspronkelijkeong[comb[i]][-2]
+    verwijderen = []
+    for k in range(len(optelling)):
+        if optelling[k][1] == 0:
+            verwijderen.append(optelling[k])
+    for v in verwijderen:
+        optelling.remove(v)
     optelling.sort()
     optelling.append(rechterkant)
+    optelling.append(1)
     if optelling not in ong:
         ong.append(optelling)
 
@@ -353,7 +364,7 @@ def optellen(comb):
 def kruisjeseruit(a):
     lege_vakjes.remove(a)
     for i in range(len(ong)):
-        for j in range(len(ong[i])-2,-1,-1):
+        for j in range(len(ong[i])-3,-1,-1):
             if a == ong[i][j][0]:
                 del ong[i][j]
     for i in uniek:
@@ -369,9 +380,9 @@ def lampjeseruit(a):
     lege_vakjes.remove(a)
     antwoord.append(a)
     for i in range(len(ong)):
-        for j in range(len(ong[i])-2,-1,-1):
+        for j in range(len(ong[i])-3,-1,-1):
             if a == ong[i][j][0]:
-                ong[i][-1] = ong[i][-1] - ong[i][j][1]
+                ong[i][-2] = ong[i][-2] - ong[i][j][1]
                 del ong[i][j]
     for i in uniek:
         if  a in uniek[i]:
@@ -390,7 +401,7 @@ stop = False
 z = 2
 def Variabelen(ongelijkheid):
     var=[]
-    for i in range(len(ongelijkheid)-1):
+    for i in range(len(ongelijkheid)-2):
         var.append(ongelijkheid[i][0])
     return var
 uniek = dict()
@@ -406,7 +417,7 @@ while lege_vakjes != []:
     #hieronder staat een loop die voor elke ongelijkheid kijkt of er nullen of enen geforceerd kunnen worden.
     for i in range(len(ong)-1, -1, -1): 
         #als alleen de rechterkant over is, haal de ongelijkheid uit de lijst.
-        if len(ong[i]) == 1:
+        if len(ong[i]) == 2:
             
             #als die ongelijkheid in de oorspronkelijke ongelijkheden zat, haal hem daar dan ook uit.
             if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
@@ -416,9 +427,9 @@ while lege_vakjes != []:
         #kan forceren, en roep dan kruisjeseruit respectievelijk lampjeseruit aan om die vakjes
         #uit alle ongelijkheden te halen. 
         else:
-            for j in range(len(ong[i])-2, -1, -1):
-                linkerkant = ong[i][-1]
-                for k in [x for x in range(len(ong[i])-2,-1,-1) if x != j]:
+            for j in range(len(ong[i])-3, -1, -1):
+                linkerkant = ong[i][-2]
+                for k in [x for x in range(len(ong[i])-3,-1,-1) if x != j]:
                     if ong[i][k][1] < 0:
                         linkerkant = linkerkant - ong[i][k][1]
                 if ong[i][j][1] < 0 and linkerkant <= ong[i][j][1]:
@@ -438,7 +449,7 @@ while lege_vakjes != []:
             #voor elke ongelijkheid, als alleen de rechterkant over is, haal de ongelijkheid uit de lijst.
             #haal die ongelijkheid dan ook uit de oorspronkelijke lijst indien die erin zat.
             for i in range(len(ong)-1,-1,-1):
-                if len(ong[i]) == 1:
+                if len(ong[i]) == 2:
                     if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
                         oorspindex.remove(oorspronkelijkeong.index(ong[i]))
                     del ong[i]
@@ -459,10 +470,10 @@ while lege_vakjes != []:
             #Haal die ongelijkheid dan ook uit de oorspronkelijke lijst indien die erin zat.
             for i in range(len(ong)-1,-1,-1):
                 maximum = 0
-                for j in range(len(ong[i])-1):
+                for j in range(len(ong[i])-2):
                     if ong[i][j][1] > 0:
                         maximum = maximum + ong[i][j][1]
-                if maximum <= ong[i][-1]:      
+                if maximum <= ong[i][-2]:      
                     if ong[i] in oorspronkelijkeong and oorspronkelijkeong.index(ong[i]) in oorspindex:
                         oorspindex.remove(oorspronkelijkeong.index(ong[i]))
                     del ong[i]
@@ -482,10 +493,10 @@ while lege_vakjes != []:
                             a = ong[j]
                             b = ong[i]
                         verschil = []
-                        for k in range(len(b)-1):
+                        for k in range(len(b)-2):
                             verschil.append(b[k])
                         nuttig = True
-                        for k in range(len(a)-1):
+                        for k in range(len(a)-2):
                             if a[k] not in verschil:
                                 nuttig = False
                                 break
@@ -494,14 +505,14 @@ while lege_vakjes != []:
                         if nuttig == True:
                             bsterker = True
                             asterker = True
-                            if b[-1] > a[-1]:
+                            if b[-2] > a[-2]:
                                 bsterker = False
                             else:
                                 for k in range(len(verschil)):
                                     if verschil[k][1] < 0:
                                         bsterker = False
                                         break
-                            if a[-1] > b[-1]:
+                            if a[-2] > b[-2]:
                                 asterker = False
                             else:
                                 for k in range(len(verschil)):
@@ -544,7 +555,7 @@ while lege_vakjes != []:
                     comb = list(comb)
                     aantalnietuniek = 0
                     for k in comb:
-                        aantalnietuniek += len(oorspronkelijkeong[k])-1
+                        aantalnietuniek += len(oorspronkelijkeong[k])-2
                     x=[]
                     for  y in uniek[str(comb[0:z-1])]:
                         x.append(y)
