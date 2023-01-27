@@ -445,9 +445,6 @@ for i in range(len(ong)):
     
 oorspindex = list(range(len(oorspronkelijkeong)))
 
-#een boolean die aangeeft als de functie moet stoppen omdat de puzzel niet uniek oplosbaar is. 
-stop = False
-
 threshold = 1
 
 #de hoeveelheid ongelijkheden die verderop in de code steeds bij elkaar moeten worden opgeteld.
@@ -529,6 +526,9 @@ while lege_vakjes != []:
                     if i in range(len(oorspindex)):
                         del oorspindex[i]
                     del ong[i]
+                    
+            if len(ong) == 1:
+                sys.exit('Error, is niet uniek oplosbaar')
 
             #onderstaande loop kijkt voor elke twee vergelijkingen of de ene minimaal dezelfde informatie bevat
             #als de andere, dan wordt die andere eruit gehaald, die is immers overbodig. Haal die ongelijkheid
@@ -625,12 +625,6 @@ while lege_vakjes != []:
             #van ongelijkheden nog steeds niet genoeg informatie is. De puzzel is dan dus niet uniek oplosbaar.
             else:
                 sys.exit('Error, is niet uniek oplosbaar')
-                break
-                      
-    #stop als de functie niet uniek oplosbaar is.
-    if stop == True:
-        sys.exit('Error, is niet uniek oplosbaar')
-        break
 
 #de oplossing wordt gesorteerd en geprint
 antwoord.sort()
@@ -834,6 +828,6 @@ for i in range(1,hoogte+1):
                 drawlampje()
 
 #onderstaande code laat de pen verdwijnen als het tekenen klaar is, 
-#en zorgt dat de executie stop wanneer er op de visualisering geklikt wordt
+#en zorgt dat de executie stopt wanneer er op de visualisering geklikt wordt
 pen.hideturtle()
 screen.exitonclick()
