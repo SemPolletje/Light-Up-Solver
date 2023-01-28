@@ -476,7 +476,7 @@ while lege_vakjes != []:
         #uit alle ongelijkheden te halen. 
         else:
             if ong[i][-1] >= threshold: #we bekijken geen ongelijkheden die zeker geen nieuwe informatie geven.
-                ong[i][-1] = 0 #zodra we een ongelijkheid hebben bekijken, is hij niet meer nuttig totdat we een van zijn variabelen weten door een andere ongelijkheid.
+                
                 for j in range(len(ong[i])-3, -1, -1):
                     linkerkant = ong[i][-2]
                     for k in [x for x in range(len(ong[i])-3,-1,-1) if x != j]:
@@ -486,6 +486,7 @@ while lege_vakjes != []:
                         lampjeseruit(ong[i][j][0])
                     elif ong[i][j][1] > 0 and linkerkant < ong[i][j][1]:
                         kruisjeseruit(ong[i][j][0])
+                    ong[i][-1] = 0 #zodra we een ongelijkheid hebben bekijken, is hij niet meer nuttig totdat we een van zijn variabelen weten door een andere ongelijkheid.
 
     #de onderstaande code vergelijkt de nog lege vakjes met de kopie van de oude nog lege vakjes, 
     #als er niks veranderd is heeft de loop dus nieuwe informatie nodig en worden er 
