@@ -43,7 +43,7 @@ while stop == False:
     hintsvoorvisualiseren.append([invoer[0],[invoer[1],invoer[2]]])
 
 #overige zwarte vakjes uit input halen, geeft foutmeldingen als de input niet goed is, 
-#gaat het antwoord berekenen als je 'stop' invoert. 
+#gaat de oplossing berekenen als je 'stop' invoert. 
 stop = False
 while stop == False:
     invoer = input('Zwart vakje: ')
@@ -109,7 +109,8 @@ while nognuttig: #hiermee vullen we al een aantal kruisjes en lampjes in, zodat 
     for i in range(len(hints)):
         hintvakje = hints[i][1]
         omvakjes = []
-
+        
+        #we voegen alle lege vakjes om een hint toe aan een lijst
         for j in range(len(omhint(hintvakje)[0])):
             omvakjes.append(omhint(hintvakje)[0][j])
             
@@ -369,6 +370,55 @@ for i in range(len(hints)):
 #En dat de variabelen, de vakjes, alleen de waarden 0 en 1 kunnen aannemen: 0 als ze geen lampje bevatten,
 #1 als ze wel een lampje bevatten.
 
+#deze functie haalt uit elke vergelijking en uit de lijst met vakjes een vakje weg als 
+#blijkt dat op dat vakje geen lampje kan staan. Verder haalt de functie ook dit vakje weg uit de 
+#dictionary met unieke variabelen, die u zo tegen zult komen. 
+def kruisjeseruit(a):
+    lege_vakjes.remove(a)
+    for i in range(len(ong)):
+        for j in range(len(ong[i])-3,-1,-1):
+            if a == ong[i][j][0]:
+                threshold = 2
+                ong[i][-1] = 2
+                del ong[i][j]
+    for i in uniek:
+        if  a in uniek[i]:
+            uniek[i].remove(a)
+
+#deze functie haalt uit elke vergelijking en uit de lijst met vakjes een vakje weg als 
+#blijkt dat op dat vakje een lampje staat, en voegt dat vakje toe aan het uiteindelijke antwoord. 
+#Ook vermindert de functie de rechterkant van de ongelijkheid met de coefficient 
+#van de variabele/het vakje waar het lampje stond. Verder haalt het de functie ook dit vakje weg
+#uit de dictionary met unieke variabelen, die u zo tegen zult komen.        
+def lampjeseruit(a):
+    lege_vakjes.remove(a)
+    antwoord.append(a)
+    for i in range(len(ong)):
+        for j in range(len(ong[i])-3,-1,-1):
+            if a == ong[i][j][0]:
+                ong[i][-2] = ong[i][-2] - ong[i][j][1]
+                threshold = 2
+                ong[i][-1] = 2
+                del ong[i][j]
+    for i in uniek:
+        if  a in uniek[i]:
+            uniek[i].remove(a)
+
+#deze functie returnt de vereniging van twee ongelijkheden
+def vereniging(a,b):
+    union = a
+    for i in range(len(b)):
+        if b[i] not in union:
+            union.append(b[i])
+    return union
+
+#deze functie returnt alle vakjes in een ongelijkheid
+def Variabelen(ongelijkheid):
+    var=[]
+    for i in range(len(ongelijkheid)-2):
+        var.append(ongelijkheid[i][0])
+    return var
+
 #de onderstaande functie telt een verzameling ongelijkheden bij elkaar op en stopt die in de lijst met ongelijkheden.
 def optellen(comb):
     optelling = []
@@ -393,68 +443,34 @@ def optellen(comb):
     if optelling not in ong:
         ong.append(optelling)
 
-#deze functie haalt uit elke vergelijking en uit de lijst met vakjes een vakje weg als 
-#blijkt dat op dat vakje geen lampje kan staan. 
-def kruisjeseruit(a):
-    lege_vakjes.remove(a)
-    for i in range(len(ong)):
-        for j in range(len(ong[i])-3,-1,-1):
-            if a == ong[i][j][0]:
-                threshold = 2
-                ong[i][-1] = 2
-                del ong[i][j]
-    for i in uniek:
-        if  a in uniek[i]:
-            uniek[i].remove(a)
-
-#deze functie haalt uit elke vergelijking en uit de lijst met vakjes een vakje weg als 
-#blijkt dat op dat vakje een lampje staat, en voegt dat vakje toe aan het uiteindelijke antwoord. 
-#Ook vermindert de functie de rechterkant van de ongelijkheid met de coefficient 
-#van de variabele/het vakje waar het lampje stond.           
-def lampjeseruit(a):
-    lege_vakjes.remove(a)
-    antwoord.append(a)
-    for i in range(len(ong)):
-        for j in range(len(ong[i])-3,-1,-1):
-            if a == ong[i][j][0]:
-                ong[i][-2] = ong[i][-2] - ong[i][j][1]
-                threshold = 2
-                ong[i][-1] = 2
-                del ong[i][j]
-    for i in uniek:
-        if  a in uniek[i]:
-            uniek[i].remove(a)
-            
-def vereniging(a,b):
-    union = a
-    for i in range(len(b)):
-        if b[i] not in union:
-            union.append(b[i])
-    return union
-
-def Variabelen(ongelijkheid):
-    var=[]
-    for i in range(len(ongelijkheid)-2):
-        var.append(ongelijkheid[i][0])
-    return var
-
 #hieronder wordt een kopie gemaakt van de ongelijkheden, om later te kunnen zien welke ongelijkheden
-#van het begin af aan in de lijst met ongelijkheden stonden.
+#van het begin af aan in de lijst met ongelijkheden stonden
 for i in range(len(ong)):
     oorspronkelijkeong.append(ong[i])
-    
+
+#hieronder wordt een lijst gemaakt die bijhoudt welke oorspronkelijke ongelijkheden nog moeten worden opgelost
 oorspindex = list(range(len(oorspronkelijkeong)))
 
-threshold = 1 #aan het begin zijn er alleen nieuwe ongelijkheden, dus die bekijken we eerst
+#een boolean die aangeeft als de functie moet stoppen omdat de puzzel niet uniek oplosbaar is
+stop = False
 
-#de hoeveelheid ongelijkheden die verderop in de code steeds bij elkaar moeten worden opgeteld.
+#de onderstaande waarde bepaalt welke ongelijkheden we moeten bekijken. We bekijken, zoals
+#u zometeen zult zien, alleen ongelijkheden waarvan de laatste waarde hoger is dan de threshold. 
+#Als er iets aan een ongelijkheid wordt aangepast, dan wordt de laatste waarde van de ongelijkheid
+#gereset naar 2, zodat de ongelijkheid de volgende keer wordt bekeken, want een aangepaste ongelijkheid
+#kan nuttige informatie bevatten. De threshold wordt naar beneden gehaald indien er geen nuttige informatie
+#uit de ongelijkheden boven de threshold kan worden gehaald. 
+threshold = 1
+
+#de hoeveelheid ongelijkheden die verderop in de code steeds bij elkaar moeten worden opgeteld
 z = 2
 
+#de onderstaande code maakt een dictionary om de unieke variabelen in een optelling (komt verderop
+#in de code) bij te houden
 uniek = dict()
 for i in range(len(oorspronkelijkeong)):
     uniek["["+str(i)+"]"]= Variabelen(oorspronkelijkeong[i])
-#het aantal variabelen in een combinatie van z ongelijkheden is een iteratief probleem, dus we houden bij wat we hebben gedaan zodat we niet steeds hetzelfde berekenen
-
+    
 #de while loop-voorwaarde betekent: zolang er nog witte vakjes geen waarde 0 of 1 toegekend hebben gekregen.
 while lege_vakjes != []:
     
@@ -471,12 +487,12 @@ while lege_vakjes != []:
             if i in range(len(oorspindex)):
                 del oorspindex[i]
             del ong[i]
-        #anders, kijk voor elk vakje in de ongelijkheid of je een 0 respectievelijk 1
+        #anders, kijk voor alle waarschijnlijk nuttige ongelijkheden naar elk vakje in de ongelijkheid of je een 0 respectievelijk 1
         #kan forceren, en roep dan kruisjeseruit respectievelijk lampjeseruit aan om die vakjes
         #uit alle ongelijkheden te halen. 
         else:
-            if ong[i][-1] >= threshold: #we bekijken geen ongelijkheden die zeker geen nieuwe informatie geven.
-                
+            if ong[i][-1] >= threshold:
+                ong[i][-1] = 0
                 for j in range(len(ong[i])-3, -1, -1):
                     linkerkant = ong[i][-2]
                     for k in [x for x in range(len(ong[i])-3,-1,-1) if x != j]:
@@ -486,15 +502,16 @@ while lege_vakjes != []:
                         lampjeseruit(ong[i][j][0])
                     elif ong[i][j][1] > 0 and linkerkant < ong[i][j][1]:
                         kruisjeseruit(ong[i][j][0])
-                    ong[i][-1] = 0 #zodra we een ongelijkheid hebben bekijken, is hij niet meer nuttig totdat we een van zijn variabelen weten door een andere ongelijkheid.
 
     #de onderstaande code vergelijkt de nog lege vakjes met de kopie van de oude nog lege vakjes, 
-    #als er niks veranderd is heeft de loop dus nieuwe informatie nodig en worden er 
+    #als er niks veranderd is heeft de loop dus nieuwe informatie nodig en wordt eerst de threshold 
+    #omlaag gehaald om te kijken of we uit de minder belangrijke ongelijkheden wel informatie kunnen halen. 
+    #Als dat ook geen nieuwe informatie oplevert worden er 
     #rijen bij elkaar opgeteld zodat daar weer informatie uit kan worden gehaald. Er worden hier ook
     #onnodige ongelijkheden uit de lijst met ongelijkheden gehaald.
     #Als er bij deze stap nog maar 1 vergelijking over is betekent dat dat de puzzel niet uniek oplosbaar is. 
     if vakjessave == lege_vakjes:
-        if threshold == 2: #als we alle ongelijkheden waarin iets is veranderd hebben bekeken, zijn er mogelijk nog nieuwe ongelijkheden waarin we ook variabelen kunnen forceren
+        if threshold == 2:
             threshold = 1
         else:
             #voor elke ongelijkheid, als alleen de rechterkant over is, haal de ongelijkheid uit de lijst.
@@ -528,9 +545,6 @@ while lege_vakjes != []:
                     if i in range(len(oorspindex)):
                         del oorspindex[i]
                     del ong[i]
-                    
-            if len(ong) == 1:
-                sys.exit('Error, is niet uniek oplosbaar')
 
             #onderstaande loop kijkt voor elke twee vergelijkingen of de ene minimaal dezelfde informatie bevat
             #als de andere, dan wordt die andere eruit gehaald, die is immers overbodig. Haal die ongelijkheid
@@ -599,8 +613,8 @@ while lege_vakjes != []:
                         del oorspindex[j]
 
             #de onderstaande loop roept de functie ´optellen´ aan voor alle mogelijke combinaties
-            #van grootte z van ongelijkheden.
-            #Dit gebeurt alleen als de variabelen in de ongelijkheden aan een bepaalde voorwaarde voldoen, dit
+            #van grootte z van de oorspronkelijke ongelijkheden.
+            #Dit gebeurt alleen als de variabelen in de oorspronkelijke ongelijkheden aan bepaalde voorwaarden voldoen, dit
             #wordt verder uitgelegd in het verslag.
             if z <= len(oorspronkelijkeong):
                 for comb in itertools.combinations(oorspindex, z):
@@ -627,6 +641,12 @@ while lege_vakjes != []:
             #van ongelijkheden nog steeds niet genoeg informatie is. De puzzel is dan dus niet uniek oplosbaar.
             else:
                 sys.exit('Error, is niet uniek oplosbaar')
+                break
+                      
+    #stop als de functie niet uniek oplosbaar is.
+    if stop == True:
+        sys.exit('Error, is niet uniek oplosbaar')
+        break
 
 #de oplossing wordt gesorteerd en geprint
 antwoord.sort()
@@ -830,6 +850,6 @@ for i in range(1,hoogte+1):
                 drawlampje()
 
 #onderstaande code laat de pen verdwijnen als het tekenen klaar is, 
-#en zorgt dat de executie stopt wanneer er op de visualisering geklikt wordt
+#en zorgt dat de executie stop wanneer er op de visualisering geklikt wordt
 pen.hideturtle()
 screen.exitonclick()
