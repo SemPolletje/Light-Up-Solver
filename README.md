@@ -26,7 +26,7 @@ It is fairly simple to run this program, considering it uses only simple imports
 11) When you typed in all the dark squares, type 'stop' to stop adding hints. Press Enter.
 12) This part is where it gets fun, you will either already have gotten a message saying there has been a mistake in the input, at which part you will have to go again from step 5. Otherwise it will run (please let it run untill it is finished or gives an error, we know it might take a while) and give you the answer in the form of:
 [[a,b],[c,d],[e,f],[g,h]]. These are the coordinates [x,y] where a lightbulb needs to be. Also now is the time there will appear a new icon on your taskbar, called 'Python Turtle Graphics'. Here you will find a drawing of the complete board with the lightbulbs in place.
-13) If at any point you would like to try again, close the 'Python Turtle Graphics' window and you can simply go back to step 5 again.
+13) If at any point you would like to try again, click somewhere on the 'Python Turtle Graphics' window and you can simply go back to step 5 again.
 
 # Credits
 We hereby want to allow ourselves to be known as the first creators of this program, Jelle Bloemendaal, Rik Roseboom and Sem van de Pol. We would also like to credit a source we used, Shi-Jim Yen , Shih-Yuan Chiu A simple and rapid Lights-up solver (2010).
