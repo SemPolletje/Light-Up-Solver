@@ -1,7 +1,7 @@
 # Light-Up-Solver
 
 # Introduction
-As the title says, this project is a way of making an automatic solver for any uniquely sulable Light-Up puzzle (not to be confused with Lights Out).
+As the title says, this project is a way of making an automatic solver for any uniquely solvable Light-Up puzzle (not to be confused with Lights Out).
 This solver uses a way of creating inequalities per area that a white square can see. By creating these inequalities we can add different inequalities together to provoke more information about the square.
 
 We then further optimized the setup by creating different ways of adding these inequalities, or making sure to remove unnecessary inequalities.
