@@ -7,7 +7,7 @@ This solver uses a way of creating inequalities per area that a white square can
 We then further optimized the setup by creating different ways of adding these inequalities, or making sure to remove unnecessary inequalities.
 Because we used these technologies, we created a very quick algorithm that still lacks define touches when it comes to bigger puzzles. This is an opportunity for anyone reading this to try making our algorithm quicker. We have selected a method to do so, but because of, amongst others, a lack of time (yes this was a project for school) we weren't able to. Our method would be:
 
-Try creating a definition that checks the priority of adding different inequalities. For example: Two inequalities from squares from eachother's neighbourhood are more important to add up than two inequalities of two squares opposite side of the board.
+Try creating a definition that checks the priority of adding different inequalities. For example: Two inequalities from squares in eachother's neighbourhood are more important to add up than two inequalities of two squares opposite side of the board.
 
 We ourselves created this project because one of us was bored of playing this game mindlessly without getting an answer if the puzzle is to difficult, so we wanted to create a way to make something that will solve it for us. We learned a lot about python in itself, but also about making an efficient program, handy datastructures and keeping our code as simple and clear as possible.
 
